@@ -135,7 +135,17 @@ class _LoginState extends State<Login> {
                     check();
                   },
                   child: Text("Login"),
-                )
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => Register()));
+                  },
+                  child: Text(
+                    "Create a new account in here",
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ],
             ),
           ),
@@ -149,6 +159,110 @@ class _LoginState extends State<Login> {
   }
 }
 
+//CLASSE QUE RETORNA PARA CADASTRO DE USUARIOS
+
+class Register extends StatefulWidget {
+  @override
+  _RegisterState createState() => _RegisterState();
+}
+
+class _RegisterState extends State<Register> {
+  String username, password, nama;
+  final _key = new GlobalKey<FormState>();
+
+  bool _secureText = false;
+
+  showHide() {
+    setState(() {
+      _secureText = !_secureText;
+    });
+  }
+
+  check() {
+    final form = _key.currentState;
+    if (form.validate()) {
+      form.save();
+      save();
+    }
+  }
+
+  save() async {
+    final response = await http.post(
+        "http://www.dionebatistap.com.br/login/api/register.php",
+        body: {"nama": nama, "username": username, "password": password});
+    final data = jsonDecode(response.body);
+    int value = data['value'];
+    String pesan = data['message'];
+    if (value == 1) {
+      setState(() {
+        Navigator.pop(context);
+      print(pesan);
+      });
+    } else {
+      print(data);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Form(
+        key: _key,
+        child: ListView(
+          padding: EdgeInsets.all(16.0),
+          children: <Widget>[
+            TextFormField(
+              // ignore: missing_return
+              validator: (e) {
+                if (e.isEmpty) {
+                  return "Please insert fullname";
+                }
+              },
+              onSaved: (e) => nama = e,
+              decoration: InputDecoration(
+                labelText: "Nome Completo",
+              ),
+            ),
+            TextFormField(
+              // ignore: missing_return
+              validator: (e) {
+                if (e.isEmpty) {
+                  return "Please insert username";
+                }
+              },
+              onSaved: (e) => username = e,
+              decoration: InputDecoration(
+                labelText: "Username",
+              ),
+            ),
+            TextFormField(
+              obscureText: _secureText,
+              onSaved: (e) => password = e,
+              decoration: InputDecoration(
+                labelText: "Password",
+                suffixIcon: IconButton(
+                  onPressed: showHide,
+                  icon: Icon(
+                    _secureText ? Icons.visibility_off : Icons.visibility,
+                  ),
+                ),
+              ),
+            ),
+            MaterialButton(
+              onPressed: () {
+                check();
+              },
+              child: Text("Register"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+//CLASSE QUE RETORNA MENU PRINCIPAL
 class MainMenu extends StatefulWidget {
   final VoidCallback signOut;
   MainMenu(this.signOut);
@@ -157,26 +271,24 @@ class MainMenu extends StatefulWidget {
 }
 
 class _MainMenuState extends State<MainMenu> {
-
   signOut() {
     setState(() {
       widget.signOut();
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         actions: <Widget>[
-            IconButton(
-              onPressed: () {
-                signOut();
-              },
-              icon: Icon(Icons.exit_to_app),
-            )
-          ],
+          IconButton(
+            onPressed: () {
+              signOut();
+            },
+            icon: Icon(Icons.exit_to_app),
+          )
+        ],
       ),
       body: Center(
         child: Text("Menu Utama"),

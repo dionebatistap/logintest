@@ -78,6 +78,15 @@ class _LoginState extends State<Login> {
     });
   }
 
+  signOut() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    setState(() {
+      preferences.setInt("value", null);
+      preferences.commit();
+      _loginStatus = LoginStatus.notSignIn;
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -134,22 +143,41 @@ class _LoginState extends State<Login> {
 
         break;
       case LoginStatus.signIn:
-        return MainMenu();
+        return MainMenu(signOut);
         break;
     }
   }
 }
 
 class MainMenu extends StatefulWidget {
+  final VoidCallback signOut;
+  MainMenu(this.signOut);
   @override
   _MainMenuState createState() => _MainMenuState();
 }
 
 class _MainMenuState extends State<MainMenu> {
+
+  signOut() {
+    setState(() {
+      widget.signOut();
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: <Widget>[
+            IconButton(
+              onPressed: () {
+                signOut();
+              },
+              icon: Icon(Icons.exit_to_app),
+            )
+          ],
+      ),
       body: Center(
         child: Text("Menu Utama"),
       ),

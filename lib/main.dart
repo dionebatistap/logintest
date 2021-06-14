@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -51,11 +52,37 @@ class _LoginState extends State<Login> {
     if (value == 1) {
       setState(() {
         _loginStatus = LoginStatus.signIn;
+        savePref(value);
       });
       print(pesan);
     } else {
       print(data);
     }
+  }
+
+  savePref(int value) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    setState(() {
+      preferences.setInt("value", value);
+      preferences.commit();
+    });
+  }
+
+  var value;
+  getPref() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    setState(() {
+      value = preferences.getInt("value");
+
+      _loginStatus = value == 1 ? LoginStatus.signIn : LoginStatus.notSignIn;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getPref();
   }
 
   @override

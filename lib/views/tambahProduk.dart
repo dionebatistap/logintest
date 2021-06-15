@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:logintest/custom/currency.dart';
 import 'package:logintest/modal/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -32,10 +34,11 @@ class _TambahProdukState extends State<TambahProduk> {
   }
 
   submit() async {
+    print(harga.replaceAll(",", ""));
     final response = await http.post(BaseUrl.tambahProduk, body: {
       "namaProduk": namaProduk,
       "qty": qty,
-      "harga": harga,
+      "harga": harga.replaceAll(",", ""),
       "idUsers": idUsers,
     });
     final data = jsonDecode(response.body);
@@ -78,6 +81,10 @@ class _TambahProdukState extends State<TambahProduk> {
               decoration: InputDecoration(labelText: 'Qty'),
             ),
             TextFormField(
+              inputFormatters: [
+                WhitelistingTextInputFormatter.digitsOnly,
+                CurrencyFormat()
+              ],
               onSaved: (e) => harga = e,
               decoration: InputDecoration(labelText: 'Harga'),
             ),

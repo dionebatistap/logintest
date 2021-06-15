@@ -35,6 +35,8 @@ class _LoginState extends State<Login> {
     });
   }
 
+  var _autovalidate = true;
+
 //logica para validar os dados antes de salvar
   check() {
     final form = _key.currentState;
@@ -42,14 +44,17 @@ class _LoginState extends State<Login> {
       form.save();
       //print("$username, $password"); *verificar retorno*
       login();
+    } else {
+      setState(() {
+        _autovalidate = true;
+      });
     }
   }
 
 //Logica para efetuar o login, push no banco de dados
 //antes daqui só passa os dados para o androi, depois para a api
   login() async {
-    final response = await http.post(
-       BaseUrl.login,
+    final response = await http.post(BaseUrl.login,
         body: {"username": username, "password": password});
     final data = jsonDecode(response.body);
     int value = data['value'];
@@ -113,15 +118,17 @@ class _LoginState extends State<Login> {
         return Scaffold(
           appBar: AppBar(),
           body: Form(
+            autovalidate: _autovalidate,
             key: _key,
             child: ListView(
               padding: EdgeInsets.all(16.0),
               children: <Widget>[
                 TextFormField(
-                  // ignore: missing_return
                   validator: (e) {
-                    if (e.isEmpty) {
-                      return "Please insert username";
+                    if (!e.contains("@")) {
+                      return "Formato Errado (E-MAIL)";
+                    } else {
+                      return null;
                     }
                   },
                   onSaved: (e) => username = e,
@@ -190,17 +197,21 @@ class _RegisterState extends State<Register> {
     });
   }
 
+  var validate = true;
   check() {
     final form = _key.currentState;
     if (form.validate()) {
       form.save();
       save();
+    } else {
+      setState(() {
+        validate = true;
+      });
     }
   }
 
   save() async {
-    final response = await http.post(
-        BaseUrl.register,
+    final response = await http.post(BaseUrl.register,
         body: {"nama": nama, "username": username, "password": password});
     final data = jsonDecode(response.body);
     int value = data['value'];
@@ -220,15 +231,17 @@ class _RegisterState extends State<Register> {
     return Scaffold(
       appBar: AppBar(),
       body: Form(
+        autovalidate: validate,
         key: _key,
         child: ListView(
           padding: EdgeInsets.all(16.0),
           children: <Widget>[
             TextFormField(
-              // ignore: missing_return
               validator: (e) {
                 if (e.isEmpty) {
                   return "Please insert fullname";
+                } else {
+                  return null;
                 }
               },
               onSaved: (e) => nama = e,
@@ -237,10 +250,11 @@ class _RegisterState extends State<Register> {
               ),
             ),
             TextFormField(
-              // ignore: missing_return
               validator: (e) {
                 if (e.isEmpty) {
                   return "Please insert username";
+                } else {
+                  return null;
                 }
               },
               onSaved: (e) => username = e,
@@ -250,6 +264,13 @@ class _RegisterState extends State<Register> {
             ),
             TextFormField(
               obscureText: _secureText,
+              validator: (e) {
+                if (e.length < 8) {
+                  return "No minimo 8 caracteres";
+                } else {
+                  return null;
+                }
+              },
               onSaved: (e) => password = e,
               decoration: InputDecoration(
                 labelText: "Password",
@@ -311,7 +332,7 @@ class _MainMenuState extends State<MainMenu> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 4,
-          child: Scaffold(
+      child: Scaffold(
         appBar: AppBar(
           actions: <Widget>[
             IconButton(
@@ -338,21 +359,21 @@ class _MainMenuState extends State<MainMenu> {
           controller: tabController,
           tabs: <Widget>[
             Tab(
-                icon: Icon(Icons.home),
-                text: "Home",
-              ),
-              Tab(
-                icon: Icon(Icons.apps),
-                text: "Product",
-              ),
-              Tab(
-                icon: Icon(Icons.group),
-                text: "Users",
-              ),
-              Tab(
-                icon: Icon(Icons.account_circle),
-                text: "Profile",
-              ),
+              icon: Icon(Icons.home),
+              text: "Home",
+            ),
+            Tab(
+              icon: Icon(Icons.apps),
+              text: "Product",
+            ),
+            Tab(
+              icon: Icon(Icons.group),
+              text: "Users",
+            ),
+            Tab(
+              icon: Icon(Icons.account_circle),
+              text: "Profile",
+            ),
           ],
         ),
       ),

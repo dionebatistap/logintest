@@ -6,6 +6,7 @@ import 'package:logintest/modal/produkModel.dart';
 import 'package:logintest/views/editProduk.dart';
 import 'package:logintest/views/tambahProduk.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class Product extends StatefulWidget {
   @override
@@ -13,6 +14,7 @@ class Product extends StatefulWidget {
 }
 
 class _ProductState extends State<Product> {
+  final money = NumberFormat("#,##0","en_US");
   var loading = false;
   final list = new List<ProdukModel>();
   final GlobalKey<RefreshIndicatorState> _refresh =
@@ -141,7 +143,7 @@ class _ProductState extends State<Product> {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Text(x.qty),
-                                Text(x.harga),
+                                Text(money.format(int.parse(x.harga))),
                                 Text(x.nama),
                                 Text(x.createdDate),
                               ],

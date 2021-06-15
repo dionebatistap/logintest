@@ -48,6 +48,7 @@ class _EditProdukState extends State<EditProduk> {
       setState(() {
         widget.reload();
         Navigator.pop(context);
+        print(pesan);
       });
     } else {
       print(pesan);

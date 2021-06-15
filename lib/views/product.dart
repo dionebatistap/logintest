@@ -44,6 +44,63 @@ class _ProductState extends State<Product> {
     }
   }
 
+  dialogDelete(String id) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+            child: ListView(
+              padding: EdgeInsets.all(16.0),
+              shrinkWrap: true,
+              children: <Widget>[
+                Text(
+                  "Deseja deletar ?",
+                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: 10.0,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text("Não")),
+                    SizedBox(
+                      width: 16.0,
+                    ),
+                    InkWell(
+                        onTap: () {
+                          _delete(id);
+                        },
+                        child: Text("Sim")),
+                  ],
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  _delete(String id) async {
+    final response =
+        await http.post(BaseUrl.deleteProduk, body: {"idProduk": id});
+    final data = jsonDecode(response.body);
+    int value = data['value'];
+    String pesan = data['message'];
+    if (value == 1) {
+      setState(() {
+        Navigator.pop(context);
+        _lihatData();
+        print(pesan);
+      });
+    } else {
+      print(pesan);
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -93,13 +150,15 @@ class _ProductState extends State<Product> {
                           IconButton(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context)=>EditProduk(x, _lihatData)
-                              ));
+                                  builder: (context) =>
+                                      EditProduk(x, _lihatData)));
                             },
                             icon: Icon(Icons.edit),
                           ),
                           IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              dialogDelete(x.id);
+                            },
                             icon: Icon(Icons.delete),
                           ),
                         ],

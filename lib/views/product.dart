@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:logintest/modal/api.dart';
 import 'package:logintest/modal/produkModel.dart';
+import 'package:logintest/views/editProduk.dart';
 import 'package:logintest/views/tambahProduk.dart';
 import 'package:http/http.dart' as http;
 
@@ -14,7 +15,8 @@ class Product extends StatefulWidget {
 class _ProductState extends State<Product> {
   var loading = false;
   final list = new List<ProdukModel>();
-  final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<RefreshIndicatorState> _refresh =
+      GlobalKey<RefreshIndicatorState>();
   Future<void> _lihatData() async {
     list.clear();
     setState(() {
@@ -89,7 +91,11 @@ class _ProductState extends State<Product> {
                             ),
                           ),
                           IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context)=>EditProduk(x, _lihatData)
+                              ));
+                            },
                             icon: Icon(Icons.edit),
                           ),
                           IconButton(

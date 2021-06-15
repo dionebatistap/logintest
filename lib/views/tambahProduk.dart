@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,6 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:logintest/custom/currency.dart';
 import 'package:logintest/modal/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
 
 class TambahProduk extends StatefulWidget {
   final VoidCallback reload;
@@ -17,6 +20,9 @@ class TambahProduk extends StatefulWidget {
 class _TambahProdukState extends State<TambahProduk> {
   String namaProduk, qty, harga, idUsers;
   final _key = new GlobalKey<FormState>();
+  File _imageFile;
+
+  final picker = ImagePicker();
 
   getPref() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -24,6 +30,48 @@ class _TambahProdukState extends State<TambahProduk> {
       idUsers = preferences.getString("id");
     });
   }
+
+  //TODO: CERTIFICAR QUE NUNCA VAI SER VAZIO A IMAGEM
+  // _pilihGallery() async {
+  //   var image = await ImagePicker.pickImage(
+  //     source: ImageSource.gallery,
+  //     maxHeight: 1920.0,
+  //     maxWidth: 1080.0,
+  //   );
+  //   setState(() {
+  //     _imageFile = image;
+  //   });
+  // }
+
+  // _pilihKamera() async {
+  //   var image = await ImagePicker.pickImage(
+  //     source: ImageSource.camera,
+  //     maxHeight: 1920.0,
+  //     maxWidth: 1080.0,
+  //   );
+  //   setState(() {
+  //     _imageFile = image;
+  //   });
+  // }
+
+  Future getimageCamera() async {
+    final pickedFile = await picker.getImage(
+        source: ImageSource.camera, maxHeight: 1920.0, maxWidth: 1080.0);
+    final File file = File(pickedFile.path);
+    setState(() {
+      _imageFile = file;
+    });
+  }
+
+  Future getimageGaleria() async {
+    final pickedFile = await picker.getImage(
+        source: ImageSource.gallery, maxHeight: 1920.0, maxWidth: 1080.0);
+    final File file = File(pickedFile.path);
+    setState(() {
+      _imageFile = file;
+    });
+  }
+
 
   check() {
     final form = _key.currentState;
@@ -33,26 +81,32 @@ class _TambahProdukState extends State<TambahProduk> {
     }
   }
 
-  submit() async {
-    print(harga.replaceAll(",", ""));
-    final response = await http.post(BaseUrl.tambahProduk, body: {
-      "namaProduk": namaProduk,
-      "qty": qty,
-      "harga": harga.replaceAll(",", ""),
-      "idUsers": idUsers,
-    });
-    final data = jsonDecode(response.body);
-    int value = data['value'];
-    String pesan = data['message'];
-    if (value == 1) {
-      print(pesan);
-      setState(() {
-        widget.reload();
-        Navigator.pop(context);
-      });
-    } else {
-      print(pesan);
-      print(print);
+   submit() async {
+    try {
+      var stream = http.ByteStream(_imageFile.openRead());
+      stream.cast();
+      var length = await _imageFile.length();
+      var uri = Uri.parse(BaseUrl.tambahProduk);
+      var request = http.MultipartRequest('POST', uri);
+      request.fields['namaProduk'] = namaProduk;
+      request.fields['qty'] = qty;
+      request.fields['harga'] = harga.replaceAll(",", '');
+      request.fields['idUsers'] = idUsers;
+
+      request.files.add(http.MultipartFile("image", stream, length,
+          filename: path.basename(_imageFile.path)));
+      var response = await request.send();
+      if (response.statusCode > 2) {
+        print("Imagem carregada");
+        setState(() {
+          widget.reload();
+          Navigator.pop(context);
+        });
+      } else {
+        print("Falha ao carregar imagem");
+      }
+    } catch (e) {
+      debugPrint("Erro $e");
     }
   }
 
@@ -65,6 +119,11 @@ class _TambahProdukState extends State<TambahProduk> {
 
   @override
   Widget build(BuildContext context) {
+     var placeholder = Container(
+      width: double.infinity,
+      height: 150.0,
+      child: Image.asset('./images/placeholder.png'),
+    );
     return Scaffold(
       appBar: AppBar(),
       body: Form(
@@ -72,6 +131,22 @@ class _TambahProdukState extends State<TambahProduk> {
         child: ListView(
           padding: EdgeInsets.all(16.0),
           children: <Widget>[
+            Container(
+              width: double.infinity,
+              height: 150.0,
+              child: InkWell(
+                onTap: () {
+                  getimageGaleria();
+                  // getimageCamera();
+                },
+                child: _imageFile == null
+                    ? placeholder
+                    : Image.file(
+                        _imageFile,
+                        fit: BoxFit.fill,
+                      ),
+              ),
+            ),
             TextFormField(
               onSaved: (e) => namaProduk = e,
               decoration: InputDecoration(labelText: 'Nama Produk'),

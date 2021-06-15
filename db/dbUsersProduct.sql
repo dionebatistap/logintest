@@ -32,6 +32,7 @@ CREATE TABLE `produk` (
   `namaProduk` text DEFAULT NULL,
   `qty` int(11) DEFAULT NULL,
   `harga` int(11) DEFAULT NULL,
+  `image` text DEFAULT NULL,
   `createdDate` datetime DEFAULT NULL,
   `idUsers` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

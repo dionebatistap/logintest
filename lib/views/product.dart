@@ -37,6 +37,7 @@ class _ProductState extends State<Product> {
           api['createdDate'],
           api['idUsers'],
           api['nama'],
+          api['image'],
         );
         list.add(ab);
       });
@@ -131,7 +132,20 @@ class _ProductState extends State<Product> {
                     return Container(
                       padding: EdgeInsets.all(10.0),
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
+                           Image.network(
+                          //'http://www.dionebatistap.com.br/login/upload/'
+                           BaseUrl.upload
+                           + x.image,
+                          width: 100.0,
+                          height: 100.0,
+                          fit: BoxFit.cover,
+                        ),
+                        SizedBox(
+                          width: 10.0,
+                        ),
+                          
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,

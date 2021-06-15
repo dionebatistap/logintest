@@ -16,6 +16,7 @@ require "../config/connect.php";
         $b['harga'] = $a['harga'];
         $b['createdDate'] = $a['createdDate'];
         $b['idUsers'] = $a['idUsers'];
+        $b['image'] = $a['image'];
         $b['nama'] = $a['nama'];
 
         array_push($response, $b);

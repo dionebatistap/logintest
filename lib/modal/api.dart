@@ -5,4 +5,5 @@ class BaseUrl {
   static String lihatProduk = "http://www.dionebatistap.com.br/login/api/lihatProduk.php";
   static String editProduk = "http://www.dionebatistap.com.br/login/api/editProduk.php";
   static String deleteProduk = "http://www.dionebatistap.com.br/login/api/deleteProduk.php";
+  static String upload = 'http://www.dionebatistap.com.br/login/upload/';
 }

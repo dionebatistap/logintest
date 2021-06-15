@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:logintest/modal/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -44,7 +45,7 @@ class _LoginState extends State<Login> {
 //antes daqui só passa os dados para o androi, depois para a api
   login() async {
     final response = await http.post(
-        "http://www.dionebatistap.com.br/login/api/login.php",
+       BaseUrl.login,
         body: {"username": username, "password": password});
     final data = jsonDecode(response.body);
     int value = data['value'];
@@ -192,7 +193,7 @@ class _RegisterState extends State<Register> {
 
   save() async {
     final response = await http.post(
-        "http://www.dionebatistap.com.br/login/api/register.php",
+        BaseUrl.register,
         body: {"nama": nama, "username": username, "password": password});
     final data = jsonDecode(response.body);
     int value = data['value'];
@@ -282,7 +283,7 @@ class _MainMenuState extends State<MainMenu> {
   }
 
   String username = "", nama = "";
-  
+
   getPref() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     setState(() {

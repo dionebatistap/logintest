@@ -14,7 +14,8 @@ class Product extends StatefulWidget {
 class _ProductState extends State<Product> {
   var loading = false;
   final list = new List<ProdukModel>();
-  _lihatData() async {
+  final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
+  Future<void> _lihatData() async {
     list.clear();
     setState(() {
       loading = true;
@@ -51,47 +52,54 @@ class _ProductState extends State<Product> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => TambahProduk()));
-        },
-      ),
-      body: loading
-      ? Center(child: CircularProgressIndicator())
-      : ListView.builder(
-        itemCount: list.length,
-        itemBuilder: (context, i){
-          final x = list[i];
-          return Container(
-            padding: EdgeInsets.all(10.0),
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(x.namaProduk, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),),
-                      Text(x.qty),
-                      Text(x.harga),
-                      Text(x.nama),
-                      Text(x.createdDate),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  onPressed: (){},
-                  icon: Icon(Icons.edit),
-                ),
-                IconButton(
-                  onPressed: (){},
-                  icon: Icon(Icons.delete),
-                ),
-              ],
-            ),
-          );
-        }
-      )
-    );
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => TambahProduk(_lihatData)));
+          },
+        ),
+        body: RefreshIndicator(
+          onRefresh: _lihatData,
+          key: _refresh,
+          child: loading
+              ? Center(child: CircularProgressIndicator())
+              : ListView.builder(
+                  itemCount: list.length,
+                  itemBuilder: (context, i) {
+                    final x = list[i];
+                    return Container(
+                      padding: EdgeInsets.all(10.0),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  x.namaProduk,
+                                  style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(x.qty),
+                                Text(x.harga),
+                                Text(x.nama),
+                                Text(x.createdDate),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.edit),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.delete),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+        ));
   }
 }

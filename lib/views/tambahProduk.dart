@@ -6,6 +6,8 @@ import 'package:logintest/modal/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TambahProduk extends StatefulWidget {
+  final VoidCallback reload;
+  TambahProduk(this.reload);
   @override
   _TambahProdukState createState() => _TambahProdukState();
 }
@@ -30,19 +32,19 @@ class _TambahProdukState extends State<TambahProduk> {
   }
 
   submit() async {
-    final response = await http.post(BaseUrl.tambahProduk,
-        body: {
-          "namaProduk": namaProduk,
-          "qty": qty,
-          "harga": harga,
-          "idUsers" : idUsers,
-          });
+    final response = await http.post(BaseUrl.tambahProduk, body: {
+      "namaProduk": namaProduk,
+      "qty": qty,
+      "harga": harga,
+      "idUsers": idUsers,
+    });
     final data = jsonDecode(response.body);
     int value = data['value'];
     String pesan = data['message'];
     if (value == 1) {
       print(pesan);
       setState(() {
+        widget.reload();
         Navigator.pop(context);
       });
     } else {
@@ -68,15 +70,15 @@ class _TambahProdukState extends State<TambahProduk> {
           padding: EdgeInsets.all(16.0),
           children: <Widget>[
             TextFormField(
-              onSaved: (e)=>namaProduk=e,
+              onSaved: (e) => namaProduk = e,
               decoration: InputDecoration(labelText: 'Nama Produk'),
             ),
             TextFormField(
-              onSaved: (e)=>qty=e,
+              onSaved: (e) => qty = e,
               decoration: InputDecoration(labelText: 'Qty'),
             ),
             TextFormField(
-              onSaved: (e)=>harga=e,
+              onSaved: (e) => harga = e,
               decoration: InputDecoration(labelText: 'Harga'),
             ),
             MaterialButton(

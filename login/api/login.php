@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD']=="POST"){
         $response['message']="Login bem sucedido";
         $response['username']=$result['username'];
         $response['nama']=$result['nama'];
+        $response['id']=$result['id'];
         echo json_encode($response);
 
     } else {

@@ -27,7 +27,7 @@ class _LoginState extends State<Login> {
   String username, password;
   final _key = new GlobalKey<FormState>();
 
-  bool _secureText = false;
+  bool _secureText = true;
 
   showHide() {
     setState(() {
@@ -56,23 +56,26 @@ class _LoginState extends State<Login> {
     String pesan = data['message'];
     String usernameAPI = data['username'];
     String namaAPI = data['nama'];
+    String id = data['id'];
     if (value == 1) {
       setState(() {
         _loginStatus = LoginStatus.signIn;
-        savePref(value, usernameAPI, namaAPI);
+        savePref(value, usernameAPI, namaAPI, id);
       });
       print(pesan);
     } else {
+      print(pesan);
       print(data);
     }
   }
 
-  savePref(int value, String username, String nama) async {
+  savePref(int value, String username, String nama, String id) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     setState(() {
       preferences.setInt("value", value);
       preferences.setString("nama", nama);
       preferences.setString("username", username);
+      preferences.setString("id", id);
       preferences.commit();
     });
   }
@@ -179,7 +182,7 @@ class _RegisterState extends State<Register> {
   String username, password, nama;
   final _key = new GlobalKey<FormState>();
 
-  bool _secureText = false;
+  bool _secureText = true;
 
   showHide() {
     setState(() {

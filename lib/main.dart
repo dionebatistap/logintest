@@ -3,6 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:logintest/modal/api.dart';
+import 'package:logintest/views/home.dart';
+import 'package:logintest/views/product.dart';
+import 'package:logintest/views/profil.dart';
+import 'package:logintest/views/users.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -283,6 +287,7 @@ class _MainMenuState extends State<MainMenu> {
   }
 
   String username = "", nama = "";
+  TabController tabController;
 
   getPref() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -301,19 +306,52 @@ class _MainMenuState extends State<MainMenu> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        actions: <Widget>[
-          IconButton(
-            onPressed: () {
-              signOut();
-            },
-            icon: Icon(Icons.exit_to_app),
-          )
-        ],
-      ),
-      body: Center(
-        child: Text("Username : $username \nNama : $nama"),
+    return DefaultTabController(
+      length: 4,
+          child: Scaffold(
+        appBar: AppBar(
+          actions: <Widget>[
+            IconButton(
+              onPressed: () {
+                signOut();
+              },
+              icon: Icon(Icons.exit_to_app),
+            )
+          ],
+        ),
+        body: TabBarView(
+          children: <Widget>[
+            Home(),
+            Product(),
+            Users(),
+            Profile(),
+          ],
+        ),
+        bottomNavigationBar: TabBar(
+          labelColor: Colors.blue,
+          unselectedLabelColor: Colors.grey,
+          indicator: UnderlineTabIndicator(
+              borderSide: BorderSide(style: BorderStyle.none)),
+          controller: tabController,
+          tabs: <Widget>[
+            Tab(
+                icon: Icon(Icons.home),
+                text: "Home",
+              ),
+              Tab(
+                icon: Icon(Icons.apps),
+                text: "Product",
+              ),
+              Tab(
+                icon: Icon(Icons.group),
+                text: "Users",
+              ),
+              Tab(
+                icon: Icon(Icons.account_circle),
+                text: "Profile",
+              ),
+          ],
+        ),
       ),
     );
   }

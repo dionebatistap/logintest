@@ -1,19 +1,19 @@
-class ProdukeModel {
+class ProdukModel {
   
   final String id;
   final String namaProduk;
   final String qty;
   final String harga;
-  final String createDate;
+  final String createdDate;
   final String idUsers;
   final String nama;
 
-  ProdukeModel(
+  ProdukModel(
   this.id,
   this.namaProduk,
   this.qty,
   this.harga,
-  this.createDate,
+  this.createdDate,
   this.idUsers,
   this.nama
   );

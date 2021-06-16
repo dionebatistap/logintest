@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:logintest/modal/api.dart';
 import 'package:logintest/modal/produkModel.dart';
 import 'package:http/http.dart' as http;
+import 'package:logintest/views/detailProduk.dart';
 
 class MenuUsers extends StatefulWidget {
   final VoidCallback signOut;
@@ -88,28 +89,37 @@ class _MenuUsersState extends State<MenuUsers> {
               itemCount: list.length,
               itemBuilder: (context, i) {
                 final x = list[i];
-                return Card(
-                  child: Column(
-                    children: <Widget>[
-                      Expanded(
-                        child: Image.network(
-                          BaseUrl.upload +
-                              x.image,
-                          fit: BoxFit.cover,
+                return InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context)=>DetailProduk(x)
+                    ));
+                  },
+                  child: Card(
+                    child: Column(
+                      children: <Widget>[
+                        Expanded(
+                          child: Hero(
+                            tag: x.id,
+                            child: Image.network(
+                              BaseUrl.upload + x.image,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
-                      ),
-                      Text(
-                        x.namaProduk,
-                        textAlign: TextAlign.center,
-                      ),
-                      Text(
-                        "RS" + money.format(int.parse(x.harga)),
-                        style: TextStyle(color: Colors.orange),
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                    ],
+                        Text(
+                          x.namaProduk,
+                          textAlign: TextAlign.center,
+                        ),
+                        Text(
+                          "RS" + money.format(int.parse(x.harga)),
+                          style: TextStyle(color: Colors.orange),
+                        ),
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                      ],
+                    ),
                   ),
                 );
               });

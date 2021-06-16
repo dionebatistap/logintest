@@ -34,27 +34,6 @@ class _TambahProdukState extends State<TambahProduk> {
   }
 
   //TODO: CERTIFICAR QUE NUNCA VAI SER VAZIO A IMAGEM
-  // _pilihGallery() async {
-  //   var image = await ImagePicker.pickImage(
-  //     source: ImageSource.gallery,
-  //     maxHeight: 1920.0,
-  //     maxWidth: 1080.0,
-  //   );
-  //   setState(() {
-  //     _imageFile = image;
-  //   });
-  // }
-
-  // _pilihKamera() async {
-  //   var image = await ImagePicker.pickImage(
-  //     source: ImageSource.camera,
-  //     maxHeight: 1920.0,
-  //     maxWidth: 1080.0,
-  //   );
-  //   setState(() {
-  //     _imageFile = image;
-  //   });
-  // }
 
   Future getimageCamera() async {
     final pickedFile = await picker.getImage(

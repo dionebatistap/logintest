@@ -19,6 +19,7 @@ class _ProductState extends State<Product> {
   final list = new List<ProdukModel>();
   final GlobalKey<RefreshIndicatorState> _refresh =
       GlobalKey<RefreshIndicatorState>();
+      
   Future<void> _lihatData() async {
     list.clear();
     setState(() {

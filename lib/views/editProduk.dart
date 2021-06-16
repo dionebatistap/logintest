@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -6,6 +7,9 @@ import 'package:intl/intl.dart';
 import 'package:logintest/custom/datePicker.dart';
 import 'package:logintest/modal/api.dart';
 import 'package:logintest/modal/produkModel.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProduk extends StatefulWidget {
   final ProdukModel model;
@@ -17,12 +21,39 @@ class EditProduk extends StatefulWidget {
 
 class _EditProdukState extends State<EditProduk> {
   final _key = new GlobalKey<FormState>();
-  String namaProduk, qty, harga;
+  String namaProduk, qty, harga, idUsers;
+
+  File _imageFile;
+  final picker = ImagePicker();
+
+  Future getimageCamera() async {
+    final pickedFile = await picker.getImage(
+        source: ImageSource.camera, maxHeight: 1920.0, maxWidth: 1080.0);
+    final File file = File(pickedFile.path);
+    setState(() {
+      _imageFile = file;
+    });
+  }
+
+  Future getimageGaleria() async {
+    final pickedFile = await picker.getImage(
+        source: ImageSource.gallery, maxHeight: 1920.0, maxWidth: 1080.0);
+    final File file = File(pickedFile.path);
+    setState(() {
+      _imageFile = file;
+    });
+  }
 
   TextEditingController txtNama, txtQty, txtHarga;
-
   String tgldate;
-  setup() {
+
+  setup() async {
+    
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    setState(() {
+      idUsers = preferences.getString("id");
+    });
+
     tgldate = widget.model.expDate;
     txtNama = TextEditingController(text: widget.model.namaProduk);
     txtQty = TextEditingController(text: widget.model.qty);
@@ -38,27 +69,56 @@ class _EditProdukState extends State<EditProduk> {
   }
 
   submit() async {
-    final response = await http.post(BaseUrl.editProduk, body: {
-      "namaProduk": namaProduk,
-      "qty": qty,
-      "harga": harga,
-      "idProduk": widget.model.id,
-      "expDate": "$tgldate"
-    });
-    final data = jsonDecode(response.body);
-    int value = data['value'];
-    String pesan = data['message'];
+    try {
+      var stream = http.ByteStream(_imageFile.openRead());
+      stream.cast();
+      var length = await _imageFile.length();
+      var uri = Uri.parse(BaseUrl.editProduk);
+      var request = http.MultipartRequest('POST', uri);
+      request.fields['namaProduk'] = namaProduk;
+      request.fields['qty'] = qty;
+      request.fields['harga'] = harga;
+      request.fields['idUsers'] = idUsers;
+      request.fields['idProduk'] = widget.model.id;
+      request.fields['expDate'] = "$tgldate";
 
-    if (value == 1) {
-      setState(() {
-        widget.reload();
-        Navigator.pop(context);
-        print(pesan);
-        print(data);
-      });
-    } else {
-      print(pesan);
+      request.files.add(http.MultipartFile("image", stream, length,
+          filename: path.basename(_imageFile.path)));
+      var response = await request.send();
+      if (response.statusCode > 2) {
+        print("Imagem carregada");
+        setState(() {
+          widget.reload();
+          Navigator.pop(context);
+        });
+      } else {
+        print("Falha ao carregar imagem");
+      }
+    } catch (e) {
+      debugPrint("Erro $e");
     }
+
+    // final response = await http.post(BaseUrl.editProduk, body: {
+    //   "namaProduk": namaProduk,
+    //   "qty": qty,
+    //   "harga": harga,
+    //   "idProduk": widget.model.id,
+    //   "expDate": "$tgldate"
+    // });
+    // final data = jsonDecode(response.body);
+    // int value = data['value'];
+    // String pesan = data['message'];
+
+    // if (value == 1) {
+    //   setState(() {
+    //     widget.reload();
+    //     Navigator.pop(context);
+    //     print(pesan);
+    //     print(data);
+    //   });
+    // } else {
+    //   print(pesan);
+    // }
   }
 
   @override
@@ -70,7 +130,9 @@ class _EditProdukState extends State<EditProduk> {
 
   String pilihTanggal, labelText;
   DateTime tgl = new DateTime.now();
+  
   var formatTgl = new DateFormat('yyyy-MM-dd');
+  
   final TextStyle valueStyle = TextStyle(fontSize: 16.0);
   Future<Null> _selectedDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -95,6 +157,22 @@ class _EditProdukState extends State<EditProduk> {
         child: ListView(
           padding: EdgeInsets.all(16.0),
           children: <Widget>[
+            Container(
+              width: double.infinity,
+              height: 150.0,
+              child: InkWell(
+                onTap: () {
+                  getimageGaleria();
+                  // getimageCamera();
+                },
+                child: _imageFile == null
+                    ? Image.network(BaseUrl.upload + widget.model.image)
+                    : Image.file(
+                        _imageFile,
+                        fit: BoxFit.fill,
+                      ),
+              ),
+            ),
             TextFormField(
               controller: txtNama,
               onSaved: (e) => namaProduk = e,

@@ -9,12 +9,13 @@ if ($_SERVER['REQUEST_METHOD']=="POST"){
     $qty = $_POST['qty'];
     $harga = $_POST['harga'];
     $idUsers = $_POST['idUsers'];
+    $expDate = $_POST['expDate'];
 
     $image = date('dmYis').str_replace(" ","", basename($_FILES['image']['name']));
     $imagePath = "../upload/".$image;
     move_uploaded_file($_FILES['image']['tmp_name'],$imagePath);
 
-        $insert = "INSERT INTO produk VALUE(NULL,'$namaProduk','$qty','$harga','$image',NOW(),'$idUsers')";
+        $insert = "INSERT INTO produk VALUE(NULL,'$namaProduk','$qty','$harga','$image','$expDate',NOW(),'$idUsers')";
         if (mysqli_query($con, $insert)){
             #code
             $response['value']=1;

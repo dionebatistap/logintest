@@ -10,11 +10,8 @@ if ($_SERVER['REQUEST_METHOD']=="POST"){
     $harga = $_POST['harga'];
     $idProduk = $_POST['idProduk'];
     $expDate = $_POST['expDate'];
-    $image = date('dmYis').str_replace(" ","", basename($_FILES['image']['name']));
-    $imagePath = "../upload/".$image;
-    move_uploaded_file($_FILES['image']['tmp_name'],$imagePath);
 
-        $insert = "UPDATE produk SET namaProduk='$namaProduk', qty='$qty', harga='$harga', ExpDate='$expDate', image='$image' WHERE id='$idProduk'";
+        $insert = "UPDATE produk SET namaProduk='$namaProduk', qty='$qty', harga='$harga', ExpDate='$expDate' WHERE id='$idProduk'";
         if (mysqli_query($con, $insert)){
             #code
             $response['value']=1;

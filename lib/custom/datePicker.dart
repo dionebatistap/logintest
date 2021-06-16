@@ -28,7 +28,7 @@ class DateDropDown extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
-              valueText ?? '',
+              valueText,
               style: valueStyle,
             ),
             Icon(

@@ -18,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD']=="POST"){
         $response['username']=$result['username'];
         $response['nama']=$result['nama'];
         $response['id']=$result['id'];
+        $response['level']=$result['level'];
         echo json_encode($response);
 
     } else {

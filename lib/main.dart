@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:logintest/modal/api.dart';
 import 'package:logintest/views/home.dart';
+import 'package:logintest/views/menuUsers.dart';
 import 'package:logintest/views/product.dart';
 import 'package:logintest/views/profil.dart';
 import 'package:logintest/views/users.dart';
@@ -20,7 +21,7 @@ class Login extends StatefulWidget {
   _LoginState createState() => _LoginState();
 }
 
-enum LoginStatus { notSignIn, signIn }
+enum LoginStatus { notSignIn, signIn, signInUsers }
 
 class _LoginState extends State<Login> {
   LoginStatus _loginStatus = LoginStatus.notSignIn;
@@ -62,25 +63,36 @@ class _LoginState extends State<Login> {
     String usernameAPI = data['username'];
     String namaAPI = data['nama'];
     String id = data['id'];
+    String level = data['level'];
     if (value == 1) {
-      setState(() {
+      //Control flow Level
+      if (level == "1") {
+        setState(() {
         _loginStatus = LoginStatus.signIn;
-        savePref(value, usernameAPI, namaAPI, id);
+        savePref(value, usernameAPI, namaAPI, id, level);
       });
+        
+      } else {
+        setState(() {
+        _loginStatus = LoginStatus.signInUsers;
+        savePref(value, usernameAPI, namaAPI, id, level);
+        });
+      }
       print(pesan);
     } else {
       print(pesan);
-      print(data);
     }
   }
 
-  savePref(int value, String username, String nama, String id) async {
+  savePref(
+      int value, String username, String nama, String id, String level) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     setState(() {
       preferences.setInt("value", value);
       preferences.setString("nama", nama);
       preferences.setString("username", username);
       preferences.setString("id", id);
+      preferences.setString("level", level);
       preferences.commit();
     });
   }
@@ -89,9 +101,13 @@ class _LoginState extends State<Login> {
   getPref() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     setState(() {
-      value = preferences.getInt("value");
+      value = preferences.getString("level");
 
-      _loginStatus = value == 1 ? LoginStatus.signIn : LoginStatus.notSignIn;
+      _loginStatus = value == "1" 
+      ? LoginStatus.signIn 
+      : value == "2"
+      ? LoginStatus.signInUsers
+      : LoginStatus.notSignIn;
     });
   }
 
@@ -99,6 +115,7 @@ class _LoginState extends State<Login> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     setState(() {
       preferences.setInt("value", null);
+      preferences.setInt("level", null);
       preferences.commit();
       _loginStatus = LoginStatus.notSignIn;
     });
@@ -173,6 +190,8 @@ class _LoginState extends State<Login> {
         break;
       case LoginStatus.signIn:
         return MainMenu(signOut);
+      case LoginStatus.signInUsers:
+        return MenuUsers(signOut);
         break;
     }
   }

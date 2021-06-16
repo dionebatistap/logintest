@@ -9,8 +9,9 @@ if ($_SERVER['REQUEST_METHOD']=="POST"){
     $qty = $_POST['qty'];
     $harga = $_POST['harga'];
     $idProduk = $_POST['idProduk'];
+    $expDate = $_POST['expDate'];
 
-        $insert = "UPDATE produk SET namaProduk = '$namaProduk', qty = '$qty', harga = '$harga' WHERE id='$idProduk'";
+        $insert = "UPDATE produk SET namaProduk='$namaProduk', qty='$qty', harga='$harga', ExpDate='$expDate' WHERE id='$idProduk'";
         if (mysqli_query($con, $insert)){
             #code
             $response['value']=1;

@@ -42,6 +42,7 @@ class _MenuUsersState extends State<MenuUsers> {
           api['idUsers'],
           api['nama'],
           api['image'],
+          api['ExpDate'],
         );
         list.add(ab);
       });

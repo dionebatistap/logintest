@@ -17,6 +17,7 @@ require "../config/connect.php";
         $b['createdDate'] = $a['createdDate'];
         $b['idUsers'] = $a['idUsers'];
         $b['image'] = $a['image'];
+        $b['ExpDate'] = $a['ExpDate'];
         $b['nama'] = $a['nama'];
 
         array_push($response, $b);

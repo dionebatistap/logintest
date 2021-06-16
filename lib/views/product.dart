@@ -38,6 +38,7 @@ class _ProductState extends State<Product> {
           api['idUsers'],
           api['nama'],
           api['image'],
+          api['ExpDate'],
         );
         list.add(ab);
       });
